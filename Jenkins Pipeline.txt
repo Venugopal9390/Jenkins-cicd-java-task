@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+       stages {
+        stage('Build Maven') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: '9bb68d85-fd89-4d33-b92c-38a7a764a9af', url: 'https://github.com/Venugopal9390/jenkins-docker-example.git']]])
+                sh "mvn -Dmaven.test.failure.ignore=true clean package" 
+                
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t venugopal9390/my-app-1.0 .'
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                   withCredentials([string(credentialsId: 'venugopalp', variable: 'password')]) {
+                    sh 'docker login -u venugopalp -p $(password)'
+}
+                    
+                   
+            }
+        }
+    }
+}
+}

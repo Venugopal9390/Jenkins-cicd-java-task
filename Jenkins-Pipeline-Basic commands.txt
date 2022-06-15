@@ -1,0 +1,4 @@
+grep docker /etc/group
+sudo usermod -a -G docker jenkins
+sudo systemctl restart jenkins
+sudo systemctl start docker

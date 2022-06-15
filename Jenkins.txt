@@ -1,0 +1,45 @@
+ tasks:
+  8     - name: Ensure Jenkins repository
+  9       yum_repository:
+ 10         name: jenkins-ci
+ 11         description: jenkins-ci package repository
+ 12         baseurl: http://pkg.jenkins.io/redhat
+ 13         gpgkey: https://pkg.jenkins.io/redhat/jenkins.io.key
+ 14         gpgcheck: yes
+ 15     - name: Ensure gpp key is imported
+ 16       rpm_key:
+ 17         state: present
+ 18         key: https://pkg.jenkins.io/redhat/jenkins.io.key
+ 19     - name: Ensure Jenkins and java-devel package installed
+ 20       yum:
+ 21         name: '{{ packages }}'
+ 22         state: present
+ 23         update_cache: true
+ 24       vars:
+ 25         packages:
+ 26           - jenkins
+ 27           - java-devel
+ 28     - name: Ensure systemd daemon reloaded
+ 29       ansible.builtin.command: systemctl daemon-reload
+ 30
+ 31     - name: Ensure Jenkins service is started
+ 32       service:
+ 33         name: jenkins
+ 34         state: started
+ 35
+ 36     - name: Ensure Jenkins service is enabled
+ 37       service:
+ 38         name: jenkins
+ 39         enabled: true
+ 40
+ 41     - name: Ensure jenkins service added to firewalld
+ 42       firewalld:
+ 43         state: enabled
+ 44         permanent: yes
+ 45         immediate: yes
+ 46     - name: Ensure port 8080 added to firewalld
+ 47       firewalld:
+ 48         port: 8080/tcp
+ 49         state: enabled
+ 50         permanent: yes
+ 51         immediate: yes
